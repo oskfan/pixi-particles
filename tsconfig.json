@@ -1,9 +1,12 @@
 {
 	"compilerOptions": {
-		"target": "ES5",
+		"target": "ES6",
 		"module": "commonjs",
+		"esModuleInterop": true,
 		"noImplicitAny": true,
-		"noEmit": true
+		"noEmit": true,
+		"baseUrl": ".",
+		"skipLibCheck": true,
 	},
 	"include": [
 		"src/*.ts"
