@@ -3,29 +3,21 @@ import { Particle } from './Particle';
 import { PropertyNode } from './PropertyNode';
 import { PolygonalChain } from './PolygonalChain';
 import { EmitterConfig, OldEmitterConfig } from './EmitterConfig';
-import { Point, Circle, Rectangle, Container, settings } from 'pixi.js';
+import { Point, Circle, Rectangle } from '@pixi/math';
+import { Container } from '@pixi/display';
+import { settings } from '@pixi/settings';
+import { Ticker } from '@pixi/ticker';
+
 // eslint-disable-next-line no-duplicate-imports
-import * as pixi from 'pixi.js';
 // get the shared ticker, in V4 and V5 friendly methods
 /**
  * @hidden
  */
-let ticker: pixi.Ticker;
-// to avoid Rollup transforming our import, save pixi namespace in a variable
-const pixiNS = pixi;
-
-if (parseInt((/^(\d+)\./).exec(pixi.VERSION)[1], 10) < 5)
-{
-    ticker = (pixiNS as any).ticker.shared;
-}
-else
-{
-    ticker = pixiNS.Ticker.shared;
-}
+const ticker: Ticker =  Ticker.shared;
 
 export interface ParticleConstructor
 {
-    new (emitter: Emitter): Particle;
+    new(emitter: Emitter): Particle;
 }
 
 /**
@@ -124,8 +116,8 @@ export class Emitter
      */
     public maxRotationSpeed: number;
     /**
-    * The Acceleration of rotation (angular acceleration) for a particle, in degrees per second.
-    */
+     * The Acceleration of rotation (angular acceleration) for a particle, in degrees per second.
+     */
     public rotationAcceleration: number;
     /**
      * The blend mode for all particles, as named by PIXI.blendModes.
@@ -138,8 +130,8 @@ export class Emitter
      */
     public customEase: SimpleEase;
     /**
-     *	Extra data for use in custom particles. The emitter doesn't look inside, but
-     *	passes it on to the particle to use in init().
+     *    Extra data for use in custom particles. The emitter doesn't look inside, but
+     *    passes it on to the particle to use in init().
      */
     public extraData: any;
     // properties for spawning particles
@@ -190,7 +182,7 @@ export class Emitter
     /**
      * A circle relative to spawnPos to spawn particles inside if the spawn type is "circle".
      */
-    public spawnCircle: Circle & {minRadius: number};
+    public spawnCircle: Circle & { minRadius: number };
     /**
      * Number of particles to spawn time that the frequency allows for particles to spawn.
      */
@@ -308,7 +300,7 @@ export class Emitter
      *                          true, the Emitter will automatically call
      *                          update via the PIXI shared ticker.
      */
-    constructor(particleParent: Container, particleImages: any, config: EmitterConfig|OldEmitterConfig)
+    constructor(particleParent: Container, particleImages: any, config: EmitterConfig | OldEmitterConfig)
     {
         this._particleConstructor = Particle;
         // properties for individual particles
@@ -389,7 +381,11 @@ export class Emitter
      * This is particularly useful ensuring that each art shows up once, in case you need to emit a body in an order.
      * For example: dragon - [Head, body1, body2, ..., tail]
      */
-    public get orderedArt(): boolean { return this._currentImageIndex !== -1; }
+    public get orderedArt(): boolean
+    {
+        return this._currentImageIndex !== -1;
+    }
+
     public set orderedArt(value)
     {
         this._currentImageIndex = value ? 0 : -1;
@@ -399,7 +395,11 @@ export class Emitter
      * Time between particle spawns in seconds. If this value is not a number greater than 0,
      * it will be set to 1 (particle per second) to prevent infinite loops.
      */
-    public get frequency(): number { return this._frequency; }
+    public get frequency(): number
+    {
+        return this._frequency;
+    }
+
     public set frequency(value)
     {
         // do some error checking to prevent infinite loops
@@ -412,12 +412,17 @@ export class Emitter
             this._frequency = 1;
         }
     }
+
     /**
      * The constructor used to create new particles. The default is
      * the built in Particle class. Setting this will dump any active or
      * pooled particles, if the emitter has already been used.
      */
-    public get particleConstructor(): typeof Particle { return this._particleConstructor; }
+    public get particleConstructor(): typeof Particle
+    {
+        return this._particleConstructor;
+    }
+
     public set particleConstructor(value)
     {
         if (value !== this._particleConstructor)
@@ -440,9 +445,13 @@ export class Emitter
     }
 
     /**
-    * The container to add particles to. Settings this will dump any active particles.
-    */
-    public get parent(): Container { return this._parent; }
+     * The container to add particles to. Settings this will dump any active particles.
+     */
+    public get parent(): Container
+    {
+        return this._parent;
+    }
+
     public set parent(value)
     {
         this.cleanup();
@@ -454,7 +463,7 @@ export class Emitter
      * @param art A texture or array of textures to use for the particles.
      * @param config A configuration object containing settings for the emitter.
      */
-    public init(art: any, config: EmitterConfig|OldEmitterConfig): void
+    public init(art: any, config: EmitterConfig | OldEmitterConfig): void
     {
         if (!art || !config)
         {
@@ -544,7 +553,7 @@ export class Emitter
             this.minStartRotation = this.maxStartRotation = 0;
         }
         if (config.noRotation
-    && (this.minStartRotation || this.maxStartRotation))
+            && (this.minStartRotation || this.maxStartRotation))
         {
             this.noRotation = !!config.noRotation;
         }
@@ -635,7 +644,7 @@ export class Emitter
      * @param config A configuration object containing settings for the emitter.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected initAdditional(art: any, config: EmitterConfig|OldEmitterConfig): void
+    protected initAdditional(art: any, config: EmitterConfig | OldEmitterConfig): void
     {
         // override in subclasses
     }
@@ -645,7 +654,7 @@ export class Emitter
      * Place for override and add new kind of spawn type
      * @param config A configuration object containing settings for the emitter.
      */
-    protected parseSpawnType(config: EmitterConfig|OldEmitterConfig): void
+    protected parseSpawnType(config: EmitterConfig | OldEmitterConfig): void
     {
         let spawnCircle;
 
@@ -785,7 +794,11 @@ export class Emitter
      * If particles should be emitted during update() calls. Setting this to false
      * stops new particles from being created, but allows existing ones to die out.
      */
-    public get emit(): boolean { return this._emit; }
+    public get emit(): boolean
+    {
+        return this._emit;
+    }
+
     public set emit(value)
     {
         this._emit = !!value;
@@ -796,7 +809,11 @@ export class Emitter
      * If the update function is called automatically from the shared ticker.
      * Setting this to false requires calling the update function manually.
      */
-    public get autoUpdate(): boolean { return this._autoUpdate; }
+    public get autoUpdate(): boolean
+    {
+        return this._autoUpdate;
+    }
+
     public set autoUpdate(value)
     {
         if (this._autoUpdate && !value)
@@ -912,7 +929,8 @@ export class Emitter
                 {
                     // If the position has changed and this isn't the first spawn,
                     // interpolate the spawn position
-                    let emitPosX; let
+                    let emitPosX;
+                    let
                         emitPosY;
 
                     if (this._prevPosIsValid && this._posChanged)
@@ -1201,13 +1219,13 @@ export class Emitter
         else
         {
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation))
-    + this.minStartRotation + this.rotation;
+                + this.minStartRotation + this.rotation;
         }
         // place the particle at a random radius in the ring
         if (spawnCircle.minRadius !== spawnCircle.radius)
         {
             helperPoint.x = (Math.random() * (spawnCircle.radius - spawnCircle.minRadius))
-    + spawnCircle.minRadius;
+                + spawnCircle.minRadius;
         }
         else
         {
@@ -1250,7 +1268,7 @@ export class Emitter
         else
         {
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation))
-    + this.minStartRotation + this.rotation;
+                + this.minStartRotation + this.rotation;
         }
         // get random point on the polygon chain
         this.spawnPolygonalChain.getRandomPoint(helperPoint);

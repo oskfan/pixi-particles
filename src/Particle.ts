@@ -2,7 +2,11 @@ import { Emitter } from './Emitter';
 import { ParticleUtils, SimpleEase, Color, GetTextureFromString } from './ParticleUtils';
 import { PropertyList } from './PropertyList';
 import { LinkedListChild } from './LinkedListContainer';
-import { Sprite, Point, Texture } from 'pixi.js';
+import { Sprite } from '@pixi/sprite';
+import { Point } from '@pixi/math';
+import { Texture } from '@pixi/core';
+
+// import { Sprite, Point, Texture } from 'pixi.js';
 
 /**
  * An individual particle image. You shouldn't have to deal with these.
@@ -141,7 +145,7 @@ export class Particle extends Sprite implements LinkedListChild
     public nextChild: LinkedListChild;
 
     /**
-     * @param {PIXI.particles.Emitter} emitter The emitter that controls this particle.
+     * @param {Emitter} emitter The emitter that controls this particle.
      */
     constructor(emitter: Emitter)
     {
@@ -389,7 +393,7 @@ export class Particle extends Sprite implements LinkedListChild
         }
         this.Sprite_destroy();
         this.emitter = this.velocity = this.colorList = this.scaleList = this.alphaList
-    = this.speedList = this.ease = this.next = this.prev = null;
+            = this.speedList = this.ease = this.next = this.prev = null;
     }
 
     /**

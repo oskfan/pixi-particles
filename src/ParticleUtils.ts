@@ -1,37 +1,30 @@
-import { BLEND_MODES, Point, Texture } from 'pixi.js';
 import { PropertyNode, ValueStep } from './PropertyNode';
+import { BLEND_MODES } from '@pixi/constants';
+import { Point } from '@pixi/math';
+import { Texture } from '@pixi/core';
+
 // eslint-disable-next-line no-duplicate-imports
-import * as pixi from 'pixi.js';
 // get Texture.from()/Texture.fromImage(), in V4 and V5 friendly methods
 /**
  * @hidden
  */
-let TextureFromString: (s: string) => pixi.Texture;
-// to avoid Rollup transforming our import, save pixi namespace in a variable
-const pixiNS = pixi;
-
-if (parseInt((/^(\d+)\./).exec(pixi.VERSION)[1], 10) < 5)
-{
-    TextureFromString = (pixiNS.Texture as any).fromImage;
-}
-else
-{
-    TextureFromString = pixiNS.Texture.from;
-}
+const TextureFromString: (s: string) => Texture = Texture.from;
 
 export function GetTextureFromString(s: string): Texture
 {
     return TextureFromString(s);
 }
 
-export interface Color {
+export interface Color
+{
     r: number;
     g: number;
     b: number;
     a?: number;
 }
 
-export interface EaseSegment {
+export interface EaseSegment
+{
     cp: number;
     s: number;
     e: number;
@@ -42,7 +35,8 @@ export type SimpleEase = (time: number) => number;
 /**
  * Contains helper functions for particles and emitters to use.
  */
-export namespace ParticleUtils {
+export namespace ParticleUtils
+{
     /**
      * If errors and warnings should be logged within the library.
      */
