@@ -5,8 +5,8 @@ import { Renderer, MaskData } from '@pixi/core';
 /** Interface for a child of a LinkedListContainer (has the prev/next properties added) */
 export interface LinkedListChild extends DisplayObject
 {
-    nextChild: LinkedListChild|null;
-    prevChild: LinkedListChild|null;
+    nextChild: LinkedListChild | null;
+    prevChild: LinkedListChild | null;
 }
 
 /**
@@ -17,8 +17,8 @@ export interface LinkedListChild extends DisplayObject
  * edge cases well if used as a complete Container replacement.
  */
 export class LinkedListContainer extends Container {
-    private _firstChild: LinkedListChild|null = null;
-    private _lastChild: LinkedListChild|null = null;
+    private _firstChild: LinkedListChild | null = null;
+    private _lastChild: LinkedListChild | null = null;
     private _childCount = 0;
 
     public get firstChild(): LinkedListChild {

@@ -166,7 +166,7 @@ export namespace ParticleUtils
     /**
      * Gets a blend mode, ensuring that it is valid.
      * @param name The name of the blend mode to get.
-     * @return The blend mode as specified in the PIXI.BLEND_MODES enumeration.
+     * @return The blend mode as specified in the BLEND_MODES enumeration.
      */
     export function getBlendMode(name: string): number {
         if (!name) return BLEND_MODES.NORMAL;
@@ -184,7 +184,7 @@ export namespace ParticleUtils
      * linear gradients to fewer colors, allowing for some optimization for Canvas2d fallbacks.
      * @param list The list of data to convert.
      * @param [numSteps=10] The number of steps to use.
-     * @return The blend mode as specified in the PIXI.blendModes enumeration.
+     * @return The blend mode as specified in the blendModes enumeration.
      */
     export function createSteppedGradient(list: ValueStep<string>[], numSteps = 10): PropertyNode<Color> {
         if (typeof numSteps !== 'number' || numSteps <= 0) {
