@@ -56,6 +56,16 @@ async function main() {
                 sourcemap,
             },
         ],
+        external: [
+            '@pixi/constants',
+            '@pixi/core',
+            '@pixi/display',
+            '@pixi/math',
+            '@pixi/settings',
+            '@pixi/sprite',
+            '@pixi/ticker',
+            '@pixi/utils',
+        ],
         plugins: [jscc({ values: { _IIFE: false } })].concat(plugins),
     });
 
@@ -75,6 +85,16 @@ async function main() {
                 extend: true,
             },
             treeshake: false,
+            external: [
+                '@pixi/constants',
+                '@pixi/core',
+                '@pixi/display',
+                '@pixi/math',
+                '@pixi/settings',
+                '@pixi/sprite',
+                '@pixi/ticker',
+                '@pixi/utils',
+            ],
             plugins: [jscc({ values: { _IIFE: true } })].concat(plugins),
         });
     }
