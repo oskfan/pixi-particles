@@ -8,6 +8,7 @@
         "max-depth": 0,
         "@typescript-eslint/camelcase": 0,
         "@typescript-eslint/no-namespace": 0,
-        "no-inner-declarations": 0
+        "no-inner-declarations": 0,
+        "brace-style": ["error","1tbs"]
     }
 }

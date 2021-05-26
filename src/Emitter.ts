@@ -28,8 +28,7 @@ const helperPoint = new Point();
 /**
  * A particle emitter.
  */
-export class Emitter
-{
+export class Emitter {
     /**
      * The constructor used to create new particles. The default is
      * the built in particle class.
@@ -300,8 +299,7 @@ export class Emitter
      *                          true, the Emitter will automatically call
      *                          update via the PIXI shared ticker.
      */
-    constructor(particleParent: Container, particleImages: any, config: EmitterConfig | OldEmitterConfig)
-    {
+    constructor(particleParent: Container, particleImages: any, config: EmitterConfig | OldEmitterConfig) {
         this._particleConstructor = Particle;
         // properties for individual particles
         this.particleImages = null;
@@ -362,8 +360,7 @@ export class Emitter
         // set the initial parent
         this.parent = particleParent;
 
-        if (particleImages && config)
-        {
+        if (particleImages && config) {
             this.init(particleImages, config);
         }
 
@@ -381,13 +378,11 @@ export class Emitter
      * This is particularly useful ensuring that each art shows up once, in case you need to emit a body in an order.
      * For example: dragon - [Head, body1, body2, ..., tail]
      */
-    public get orderedArt(): boolean
-    {
+    public get orderedArt(): boolean {
         return this._currentImageIndex !== -1;
     }
 
-    public set orderedArt(value)
-    {
+    public set orderedArt(value) {
         this._currentImageIndex = value ? 0 : -1;
     }
 
@@ -395,20 +390,15 @@ export class Emitter
      * Time between particle spawns in seconds. If this value is not a number greater than 0,
      * it will be set to 1 (particle per second) to prevent infinite loops.
      */
-    public get frequency(): number
-    {
+    public get frequency(): number {
         return this._frequency;
     }
 
-    public set frequency(value)
-    {
+    public set frequency(value) {
         // do some error checking to prevent infinite loops
-        if (typeof value === 'number' && value > 0)
-        {
+        if (typeof value === 'number' && value > 0) {
             this._frequency = value;
-        }
-        else
-        {
+        } else {
             this._frequency = 1;
         }
     }
@@ -418,27 +408,22 @@ export class Emitter
      * the built in Particle class. Setting this will dump any active or
      * pooled particles, if the emitter has already been used.
      */
-    public get particleConstructor(): typeof Particle
-    {
+    public get particleConstructor(): typeof Particle {
         return this._particleConstructor;
     }
 
-    public set particleConstructor(value)
-    {
-        if (value !== this._particleConstructor)
-        {
+    public set particleConstructor(value) {
+        if (value !== this._particleConstructor) {
             this._particleConstructor = value;
             // clean up existing particles
             this.cleanup();
             // scrap all the particles
-            for (let particle = this._poolFirst; particle; particle = particle.next)
-            {
+            for (let particle = this._poolFirst; particle; particle = particle.next) {
                 particle.destroy();
             }
             this._poolFirst = null;
             // re-initialize the emitter so that the new constructor can do anything it needs to
-            if (this._origConfig && this._origArt)
-            {
+            if (this._origConfig && this._origArt) {
                 this.init(this._origArt, this._origConfig);
             }
         }
@@ -447,13 +432,11 @@ export class Emitter
     /**
      * The container to add particles to. Settings this will dump any active particles.
      */
-    public get parent(): Container
-    {
+    public get parent(): Container {
         return this._parent;
     }
 
-    public set parent(value)
-    {
+    public set parent(value) {
         this.cleanup();
         this._parent = value;
     }
@@ -463,10 +446,8 @@ export class Emitter
      * @param art A texture or array of textures to use for the particles.
      * @param config A configuration object containing settings for the emitter.
      */
-    public init(art: any, config: EmitterConfig | OldEmitterConfig): void
-    {
-        if (!art || !config)
-        {
+    public init(art: any, config: EmitterConfig | OldEmitterConfig): void {
+        if (!art || !config) {
             return;
         }
         // clean up any existing particles
@@ -487,88 +468,64 @@ export class Emitter
         // Particle Properties   //
         // /////////////////////////
         // set up the alpha
-        if (config.alpha)
-        {
+        if (config.alpha) {
             this.startAlpha = PropertyNode.createList(config.alpha);
-        }
-        else
-        {
+        } else {
             this.startAlpha = new PropertyNode(1, 0);
         }
         // set up the speed
-        if (config.speed)
-        {
+        if (config.speed) {
             this.startSpeed = PropertyNode.createList(config.speed);
             // eslint-disable-next-line max-len
             this.minimumSpeedMultiplier = ('minimumSpeedMultiplier' in config ? config.minimumSpeedMultiplier : (config.speed as any).minimumSpeedMultiplier) || 1;
-        }
-        else
-        {
+        } else {
             this.minimumSpeedMultiplier = 1;
             this.startSpeed = new PropertyNode(0, 0);
         }
         // set up acceleration
         const acceleration = config.acceleration;
 
-        if (acceleration && (acceleration.x || acceleration.y))
-        {
+        if (acceleration && (acceleration.x || acceleration.y)) {
             // make sure we disable speed interpolation
             this.startSpeed.next = null;
             this.acceleration = new Point(acceleration.x, acceleration.y);
             this.maxSpeed = config.maxSpeed || NaN;
-        }
-        else
-        {
+        } else {
             this.acceleration = new Point();
         }
         // set up the scale
-        if (config.scale)
-        {
+        if (config.scale) {
             this.startScale = PropertyNode.createList(config.scale);
             // eslint-disable-next-line max-len
             this.minimumScaleMultiplier = ('minimumScaleMultiplier' in config ? config.minimumScaleMultiplier : (config.scale as any).minimumScaleMultiplier) || 1;
-        }
-        else
-        {
+        } else {
             this.startScale = new PropertyNode(1, 0);
             this.minimumScaleMultiplier = 1;
         }
         // set up the color
-        if (config.color)
-        {
+        if (config.color) {
             this.startColor = PropertyNode.createList(config.color);
-        }
-        else
-        {
+        } else {
             this.startColor = new PropertyNode({ r: 0xFF, g: 0xFF, b: 0xFF }, 0);
         }
         // set up the start rotation
-        if (config.startRotation)
-        {
+        if (config.startRotation) {
             this.minStartRotation = config.startRotation.min;
             this.maxStartRotation = config.startRotation.max;
-        }
-        else
-        {
+        } else {
             this.minStartRotation = this.maxStartRotation = 0;
         }
         if (config.noRotation
-            && (this.minStartRotation || this.maxStartRotation))
-        {
+            && (this.minStartRotation || this.maxStartRotation)) {
             this.noRotation = !!config.noRotation;
-        }
-        else
-        {
+        } else {
             this.noRotation = false;
         }
         // set up the rotation speed
-        if (config.rotationSpeed)
-        {
+        if (config.rotationSpeed) {
             this.minRotationSpeed = config.rotationSpeed.min;
             this.maxRotationSpeed = config.rotationSpeed.max;
-        }
-        else
-        {
+        } else {
             this.minRotationSpeed = this.maxRotationSpeed = 0;
         }
 
@@ -579,22 +536,16 @@ export class Emitter
         // get the blend mode
         this.particleBlendMode = ParticleUtils.getBlendMode(config.blendMode);
         // use the custom ease if provided
-        if (config.ease)
-        {
+        if (config.ease) {
             this.customEase = typeof config.ease === 'function'
                 ? config.ease : ParticleUtils.generateEase(config.ease);
-        }
-        else
-        {
+        } else {
             this.customEase = null;
         }
         // set up the extra data, running it through the particle class's parseData function.
-        if (partClass.parseData)
-        {
+        if (partClass.parseData) {
             this.extraData = partClass.parseData(config.extraData);
-        }
-        else
-        {
+        } else {
             this.extraData = config.extraData || null;
         }
         // ////////////////////////
@@ -603,8 +554,7 @@ export class Emitter
         // reset spawn type specific settings
         this.spawnRect = this.spawnCircle = null;
         this.particlesPerWave = 1;
-        if (config.particlesPerWave && config.particlesPerWave > 1)
-        {
+        if (config.particlesPerWave && config.particlesPerWave > 1) {
             this.particlesPerWave = config.particlesPerWave;
         }
         this.particleSpacing = 0;
@@ -644,8 +594,7 @@ export class Emitter
      * @param config A configuration object containing settings for the emitter.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected initAdditional(art: any, config: EmitterConfig | OldEmitterConfig): void
-    {
+    protected initAdditional(art: any, config: EmitterConfig | OldEmitterConfig): void {
         // override in subclasses
     }
 
@@ -654,12 +603,10 @@ export class Emitter
      * Place for override and add new kind of spawn type
      * @param config A configuration object containing settings for the emitter.
      */
-    protected parseSpawnType(config: EmitterConfig | OldEmitterConfig): void
-    {
+    protected parseSpawnType(config: EmitterConfig | OldEmitterConfig): void {
         let spawnCircle;
 
-        switch (config.spawnType)
-        {
+        switch (config.spawnType) {
             case 'rect':
                 this.spawnType = 'rect';
                 this._spawnFunc = this._spawnRect;
@@ -707,22 +654,17 @@ export class Emitter
      * @param particle The particle to recycle.
      * @internal
      */
-    public recycle(particle: Particle): void
-    {
-        if (particle.next)
-        {
+    public recycle(particle: Particle): void {
+        if (particle.next) {
             particle.next.prev = particle.prev;
         }
-        if (particle.prev)
-        {
+        if (particle.prev) {
             particle.prev.next = particle.next;
         }
-        if (particle === this._activeParticlesLast)
-        {
+        if (particle === this._activeParticlesLast) {
             this._activeParticlesLast = particle.prev;
         }
-        if (particle === this._activeParticlesFirst)
-        {
+        if (particle === this._activeParticlesFirst) {
             this._activeParticlesFirst = particle.next;
         }
         // add to pool
@@ -730,8 +672,7 @@ export class Emitter
         particle.next = this._poolFirst;
         this._poolFirst = particle;
         // remove child from display, or make it invisible if it is in a ParticleContainer
-        if (particle.parent)
-        {
+        if (particle.parent) {
             particle.parent.removeChild(particle);
         }
         // decrease count
@@ -742,8 +683,7 @@ export class Emitter
      * Sets the rotation of the emitter to a new value.
      * @param newRot The new rotation, in degrees.
      */
-    public rotate(newRot: number): void
-    {
+    public rotate(newRot: number): void {
         if (this.rotation === newRot) return;
         // caclulate the difference in rotation for rotating spawnPos
         const diff = newRot - this.rotation;
@@ -760,8 +700,7 @@ export class Emitter
      * @param x The new x value of the spawn position for the emitter.
      * @param y The new y value of the spawn position for the emitter.
      */
-    public updateSpawnPos(x: number, y: number): void
-    {
+    public updateSpawnPos(x: number, y: number): void {
         this._posChanged = true;
         this.spawnPos.x = x;
         this.spawnPos.y = y;
@@ -773,8 +712,7 @@ export class Emitter
      * @param x The new x value of the emitter's owner.
      * @param y The new y value of the emitter's owner.
      */
-    public updateOwnerPos(x: number, y: number): void
-    {
+    public updateOwnerPos(x: number, y: number): void {
         this._posChanged = true;
         this.ownerPos.x = x;
         this.ownerPos.y = y;
@@ -785,8 +723,7 @@ export class Emitter
      * This should be used if you made a major position change of your emitter's owner
      * that was not normal movement.
      */
-    public resetPositionTracking(): void
-    {
+    public resetPositionTracking(): void {
         this._prevPosIsValid = false;
     }
 
@@ -794,13 +731,11 @@ export class Emitter
      * If particles should be emitted during update() calls. Setting this to false
      * stops new particles from being created, but allows existing ones to die out.
      */
-    public get emit(): boolean
-    {
+    public get emit(): boolean {
         return this._emit;
     }
 
-    public set emit(value)
-    {
+    public set emit(value) {
         this._emit = !!value;
         this._emitterLife = this.emitterLifetime;
     }
@@ -809,19 +744,14 @@ export class Emitter
      * If the update function is called automatically from the shared ticker.
      * Setting this to false requires calling the update function manually.
      */
-    public get autoUpdate(): boolean
-    {
+    public get autoUpdate(): boolean {
         return this._autoUpdate;
     }
 
-    public set autoUpdate(value)
-    {
-        if (this._autoUpdate && !value)
-        {
+    public set autoUpdate(value) {
+        if (this._autoUpdate && !value) {
             ticker.remove(this.update, this);
-        }
-        else if (!this._autoUpdate && value)
-        {
+        } else if (!this._autoUpdate && value) {
             ticker.add(this.update, this);
         }
         this._autoUpdate = !!value;
@@ -832,8 +762,7 @@ export class Emitter
      * when particle emission is complete.
      * @param callback Callback for when emission is complete (all particles have died off)
      */
-    public playOnceAndDestroy(callback?: () => void): void
-    {
+    public playOnceAndDestroy(callback?: () => void): void {
         this.autoUpdate = true;
         this.emit = true;
         this._destroyWhenComplete = true;
@@ -844,8 +773,7 @@ export class Emitter
      * Starts emitting particles and optionally calls a callback when particle emission is complete.
      * @param callback Callback for when emission is complete (all particles have died off)
      */
-    public playOnce(callback?: () => void): void
-    {
+    public playOnce(callback?: () => void): void {
         this.emit = true;
         this._completeCallback = callback;
     }
@@ -854,10 +782,8 @@ export class Emitter
      * Updates all particles spawned by this emitter and emits new ones.
      * @param delta Time elapsed since the previous frame, in __seconds__.
      */
-    public update(delta: number): void
-    {
-        if (this._autoUpdate)
-        {
+    public update(delta: number): void {
+        if (this._autoUpdate) {
             delta = delta / settings.TARGET_FPMS / 1000;
         }
 
@@ -869,8 +795,7 @@ export class Emitter
         let particle;
         let next;
 
-        for (particle = this._activeParticlesFirst; particle; particle = next)
-        {
+        for (particle = this._activeParticlesFirst; particle; particle = next) {
             next = particle.next;
             particle.update(delta);
         }
@@ -878,8 +803,7 @@ export class Emitter
         let prevY;
         // if the previous position is valid, store these for later interpolation
 
-        if (this._prevPosIsValid)
-        {
+        if (this._prevPosIsValid) {
             prevX = this._prevEmitterPos.x;
             prevY = this._prevEmitterPos.y;
         }
@@ -888,19 +812,15 @@ export class Emitter
         const curY = this.ownerPos.y + this.spawnPos.y;
         // spawn new particles
 
-        if (this._emit)
-        {
+        if (this._emit) {
             // decrease spawn timer
             this._spawnTimer -= delta < 0 ? 0 : delta;
             // while _spawnTimer < 0, we have particles to spawn
-            while (this._spawnTimer <= 0)
-            {
+            while (this._spawnTimer <= 0) {
                 // determine if the emitter should stop spawning
-                if (this._emitterLife >= 0)
-                {
+                if (this._emitterLife >= 0) {
                     this._emitterLife -= this._frequency;
-                    if (this._emitterLife <= 0)
-                    {
+                    if (this._emitterLife <= 0) {
                         this._spawnTimer = 0;
                         this._emitterLife = 0;
                         this.emit = false;
@@ -908,97 +828,78 @@ export class Emitter
                     }
                 }
                 // determine if we have hit the particle limit
-                if (this.particleCount >= this.maxParticles)
-                {
+                if (this.particleCount >= this.maxParticles) {
                     this._spawnTimer += this._frequency;
                     continue;
                 }
                 // determine the particle lifetime
                 let lifetime;
 
-                if (this.minLifetime === this.maxLifetime)
-                {
+                if (this.minLifetime === this.maxLifetime) {
                     lifetime = this.minLifetime;
-                }
-                else
-                {
+                } else {
                     lifetime = (Math.random() * (this.maxLifetime - this.minLifetime)) + this.minLifetime;
                 }
                 // only make the particle if it wouldn't immediately destroy itself
-                if (-this._spawnTimer < lifetime)
-                {
+                if (-this._spawnTimer < lifetime) {
                     // If the position has changed and this isn't the first spawn,
                     // interpolate the spawn position
                     let emitPosX;
                     let
                         emitPosY;
 
-                    if (this._prevPosIsValid && this._posChanged)
-                    {
+                    if (this._prevPosIsValid && this._posChanged) {
                         // 1 - _spawnTimer / delta, but _spawnTimer is negative
                         const lerp = 1 + (this._spawnTimer / delta);
 
                         emitPosX = ((curX - prevX) * lerp) + prevX;
                         emitPosY = ((curY - prevY) * lerp) + prevY;
-                    }
-                    else// otherwise just set to the spawn position
+                    } else// otherwise just set to the spawn position
                     {
                         emitPosX = curX;
                         emitPosY = curY;
                     }
                     // create enough particles to fill the wave (non-burst types have a wave of 1)
                     i = 0;
-                    for (let len = Math.min(this.particlesPerWave, this.maxParticles - this.particleCount); i < len; ++i)
-                    {
+                    for (let len = Math.min(this.particlesPerWave, this.maxParticles - this.particleCount); i < len; ++i) {
                         // see if we actually spawn one
-                        if (this.spawnChance < 1 && Math.random() >= this.spawnChance)
-                        {
+                        if (this.spawnChance < 1 && Math.random() >= this.spawnChance) {
                             continue;
                         }
                         // create particle
                         let p;
 
-                        if (this._poolFirst)
-                        {
+                        if (this._poolFirst) {
                             p = this._poolFirst;
                             this._poolFirst = this._poolFirst.next;
                             p.next = null;
-                        }
-                        else
-                        {
+                        } else {
                             p = new this.particleConstructor(this);
                         }
 
                         // set a random texture if we have more than one
-                        if (this.particleImages.length > 1)
-                        {
+                        if (this.particleImages.length > 1) {
                             // if using ordered art
-                            if (this._currentImageIndex !== -1)
-                            {
+                            if (this._currentImageIndex !== -1) {
                                 // get current art index, then increment for the next particle
                                 p.applyArt(this.particleImages[this._currentImageIndex++]);
                                 // loop around if needed
-                                if (this._currentImageIndex < 0 || this._currentImageIndex >= this.particleImages.length)
-                                {
+                                if (this._currentImageIndex < 0 || this._currentImageIndex >= this.particleImages.length) {
                                     this._currentImageIndex = 0;
                                 }
                             }
                             // otherwise grab a random one
-                            else
-                            {
+                            else {
                                 p.applyArt(this.particleImages[Math.floor(Math.random() * this.particleImages.length)]);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             // if they are actually the same texture, a standard particle
                             // will quit early from the texture setting in setTexture().
                             p.applyArt(this.particleImages[0]);
                         }
                         // set up the start and end values
                         p.alphaList.reset(this.startAlpha);
-                        if (this.minimumSpeedMultiplier !== 1)
-                        {
+                        if (this.minimumSpeedMultiplier !== 1) {
                             // eslint-disable-next-line max-len
                             p.speedMultiplier = (Math.random() * (1 - this.minimumSpeedMultiplier)) + this.minimumSpeedMultiplier;
                         }
@@ -1006,20 +907,16 @@ export class Emitter
                         p.acceleration.x = this.acceleration.x;
                         p.acceleration.y = this.acceleration.y;
                         p.maxSpeed = this.maxSpeed;
-                        if (this.minimumScaleMultiplier !== 1)
-                        {
+                        if (this.minimumScaleMultiplier !== 1) {
                             // eslint-disable-next-line max-len
                             p.scaleMultiplier = (Math.random() * (1 - this.minimumScaleMultiplier)) + this.minimumScaleMultiplier;
                         }
                         p.scaleList.reset(this.startScale);
                         p.colorList.reset(this.startColor);
                         // randomize the rotation speed
-                        if (this.minRotationSpeed === this.maxRotationSpeed)
-                        {
+                        if (this.minRotationSpeed === this.maxRotationSpeed) {
                             p.rotationSpeed = this.minRotationSpeed;
-                        }
-                        else
-                        {
+                        } else {
                             // eslint-disable-next-line max-len
                             p.rotationSpeed = (Math.random() * (this.maxRotationSpeed - this.minRotationSpeed)) + this.minRotationSpeed;
                         }
@@ -1040,23 +937,17 @@ export class Emitter
                         // initialize particle
                         p.init();
                         // add the particle to the display list
-                        if (this.addAtBack)
-                        {
+                        if (this.addAtBack) {
                             this._parent.addChildAt(p, 0);
-                        }
-                        else
-                        {
+                        } else {
                             this._parent.addChild(p);
                         }
                         // add particle to list of active particles
-                        if (this._activeParticlesLast)
-                        {
+                        if (this._activeParticlesLast) {
                             this._activeParticlesLast.next = p;
                             p.prev = this._activeParticlesLast;
                             this._activeParticlesLast = p;
-                        }
-                        else
-                        {
+                        } else {
                             this._activeParticlesLast = this._activeParticlesFirst = p;
                         }
                         ++this.particleCount;
@@ -1069,8 +960,7 @@ export class Emitter
             }
         }
         // if the position changed before this update, then keep track of that
-        if (this._posChanged)
-        {
+        if (this._posChanged) {
             this._prevEmitterPos.x = curX;
             this._prevEmitterPos.y = curY;
             this._prevPosIsValid = true;
@@ -1078,17 +968,14 @@ export class Emitter
         }
 
         // if we are all done and should destroy ourselves, take care of that
-        if (!this._emit && !this._activeParticlesFirst)
-        {
-            if (this._completeCallback)
-            {
+        if (!this._emit && !this._activeParticlesFirst) {
+            if (this._completeCallback) {
                 const cb = this._completeCallback;
 
                 this._completeCallback = null;
                 cb();
             }
-            if (this._destroyWhenComplete)
-            {
+            if (this._destroyWhenComplete) {
                 this.destroy();
             }
         }
@@ -1100,8 +987,7 @@ export class Emitter
      * @param p The particle
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected applyAdditionalProperties(p: Particle): void
-    {
+    protected applyAdditionalProperties(p: Particle): void {
         // for override in subclass
     }
 
@@ -1112,16 +998,12 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave. Not used for this function.
      */
-    protected _spawnPoint(p: Particle, emitPosX: number, emitPosY: number): void
-    {
+    protected _spawnPoint(p: Particle, emitPosX: number, emitPosY: number): void {
         // set the initial rotation/direction of the particle based on
         // starting particle angle and rotation of emitter
-        if (this.minStartRotation === this.maxStartRotation)
-        {
+        if (this.minStartRotation === this.maxStartRotation) {
             p.rotation = this.minStartRotation + this.rotation;
-        }
-        else
-        {
+        } else {
             // eslint-disable-next-line max-len
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation)) + this.minStartRotation + this.rotation;
         }
@@ -1137,24 +1019,19 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave. Not used for this function.
      */
-    protected _spawnRect(p: Particle, emitPosX: number, emitPosY: number): void
-    {
+    protected _spawnRect(p: Particle, emitPosX: number, emitPosY: number): void {
         // set the initial rotation/direction of the particle based on starting
         // particle angle and rotation of emitter
-        if (this.minStartRotation === this.maxStartRotation)
-        {
+        if (this.minStartRotation === this.maxStartRotation) {
             p.rotation = this.minStartRotation + this.rotation;
-        }
-        else
-        {
+        } else {
             // eslint-disable-next-line max-len
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation)) + this.minStartRotation + this.rotation;
         }
         // place the particle at a random point in the rectangle
         helperPoint.x = (Math.random() * this.spawnRect.width) + this.spawnRect.x;
         helperPoint.y = (Math.random() * this.spawnRect.height) + this.spawnRect.y;
-        if (this.rotation !== 0)
-        {
+        if (this.rotation !== 0) {
             ParticleUtils.rotatePoint(this.rotation, helperPoint);
         }
         p.position.x = emitPosX + helperPoint.x;
@@ -1168,16 +1045,12 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave. Not used for this function.
      */
-    protected _spawnCircle(p: Particle, emitPosX: number, emitPosY: number): void
-    {
+    protected _spawnCircle(p: Particle, emitPosX: number, emitPosY: number): void {
         // set the initial rotation/direction of the particle based on starting
         // particle angle and rotation of emitter
-        if (this.minStartRotation === this.maxStartRotation)
-        {
+        if (this.minStartRotation === this.maxStartRotation) {
             p.rotation = this.minStartRotation + this.rotation;
-        }
-        else
-        {
+        } else {
             // eslint-disable-next-line max-len
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation)) + this.minStartRotation + this.rotation;
         }
@@ -1190,8 +1063,7 @@ export class Emitter
         helperPoint.x += this.spawnCircle.x;
         helperPoint.y += this.spawnCircle.y;
         // rotate the point by the emitter's rotation
-        if (this.rotation !== 0)
-        {
+        if (this.rotation !== 0) {
             ParticleUtils.rotatePoint(this.rotation, helperPoint);
         }
         // set the position, offset by the emitter's position
@@ -1206,29 +1078,22 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave. Not used for this function.
      */
-    protected _spawnRing(p: Particle, emitPosX: number, emitPosY: number): void
-    {
+    protected _spawnRing(p: Particle, emitPosX: number, emitPosY: number): void {
         const spawnCircle = this.spawnCircle;
         // set the initial rotation/direction of the particle based on starting
         // particle angle and rotation of emitter
 
-        if (this.minStartRotation === this.maxStartRotation)
-        {
+        if (this.minStartRotation === this.maxStartRotation) {
             p.rotation = this.minStartRotation + this.rotation;
-        }
-        else
-        {
+        } else {
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation))
                 + this.minStartRotation + this.rotation;
         }
         // place the particle at a random radius in the ring
-        if (spawnCircle.minRadius !== spawnCircle.radius)
-        {
+        if (spawnCircle.minRadius !== spawnCircle.radius) {
             helperPoint.x = (Math.random() * (spawnCircle.radius - spawnCircle.minRadius))
                 + spawnCircle.minRadius;
-        }
-        else
-        {
+        } else {
             helperPoint.x = spawnCircle.radius;
         }
         helperPoint.y = 0;
@@ -1241,8 +1106,7 @@ export class Emitter
         helperPoint.x += this.spawnCircle.x;
         helperPoint.y += this.spawnCircle.y;
         // rotate the point by the emitter's rotation
-        if (this.rotation !== 0)
-        {
+        if (this.rotation !== 0) {
             ParticleUtils.rotatePoint(this.rotation, helperPoint);
         }
         // set the position, offset by the emitter's position
@@ -1257,24 +1121,19 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave. Not used for this function.
      */
-    protected _spawnPolygonalChain(p: Particle, emitPosX: number, emitPosY: number): void
-    {
+    protected _spawnPolygonalChain(p: Particle, emitPosX: number, emitPosY: number): void {
         // set the initial rotation/direction of the particle based on starting
         // particle angle and rotation of emitter
-        if (this.minStartRotation === this.maxStartRotation)
-        {
+        if (this.minStartRotation === this.maxStartRotation) {
             p.rotation = this.minStartRotation + this.rotation;
-        }
-        else
-        {
+        } else {
             p.rotation = (Math.random() * (this.maxStartRotation - this.minStartRotation))
                 + this.minStartRotation + this.rotation;
         }
         // get random point on the polygon chain
         this.spawnPolygonalChain.getRandomPoint(helperPoint);
         // rotate the point by the emitter's rotation
-        if (this.rotation !== 0)
-        {
+        if (this.rotation !== 0) {
             ParticleUtils.rotatePoint(this.rotation, helperPoint);
         }
         // set the position, offset by the emitter's position
@@ -1289,16 +1148,12 @@ export class Emitter
      * @param emitPosY The emitter's y position
      * @param i The particle number in the current wave.
      */
-    protected _spawnBurst(p: Particle, emitPosX: number, emitPosY: number, i: number): void
-    {
+    protected _spawnBurst(p: Particle, emitPosX: number, emitPosY: number, i: number): void {
         // set the initial rotation/direction of the particle based on spawn
         // angle and rotation of emitter
-        if (this.particleSpacing === 0)
-        {
+        if (this.particleSpacing === 0) {
             p.rotation = Math.random() * 360;
-        }
-        else
-        {
+        } else {
             p.rotation = this.angleStart + (this.particleSpacing * i) + this.rotation;
         }
         // drop the particle at the emitter's position
@@ -1309,17 +1164,14 @@ export class Emitter
     /**
      * Kills all active particles immediately.
      */
-    public cleanup(): void
-    {
+    public cleanup(): void {
         let particle;
         let next;
 
-        for (particle = this._activeParticlesFirst; particle; particle = next)
-        {
+        for (particle = this._activeParticlesFirst; particle; particle = next) {
             next = particle.next;
             this.recycle(particle);
-            if (particle.parent)
-            {
+            if (particle.parent) {
                 particle.parent.removeChild(particle);
             }
         }
@@ -1330,8 +1182,7 @@ export class Emitter
     /**
      * Destroys the emitter and all of its particles.
      */
-    public destroy(): void
-    {
+    public destroy(): void {
         // make sure we aren't still listening to any tickers
         this.autoUpdate = false;
         // puts all active particles in the pool, and removes them from the particle parent
@@ -1339,8 +1190,7 @@ export class Emitter
         // wipe the pool clean
         let next;
 
-        for (let particle = this._poolFirst; particle; particle = next)
-        {
+        for (let particle = this._poolFirst; particle; particle = next) {
             // store next value so we don't lose it in our destroy call
             next = particle.next;
             particle.destroy();

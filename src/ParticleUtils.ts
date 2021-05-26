@@ -10,8 +10,7 @@ import { Texture } from '@pixi/core';
  */
 const TextureFromString: (s: string) => Texture = Texture.from;
 
-export function GetTextureFromString(s: string): Texture
-{
+export function GetTextureFromString(s: string): Texture {
     return TextureFromString(s);
 }
 
@@ -49,8 +48,7 @@ export namespace ParticleUtils
      * @param angle The angle to rotate by in degrees
      * @param p The point to rotate around 0,0.
      */
-    export function rotatePoint(angle: number, p: Point): void
-    {
+    export function rotatePoint(angle: number, p: Point): void {
         if (!angle) return;
         angle *= ParticleUtils.DEG_TO_RADS;
         const s = Math.sin(angle);
@@ -69,8 +67,7 @@ export namespace ParticleUtils
      * @param b The blue value of the color
      * @return The color in the form of 0xRRGGBB
      */
-    export function combineRGBComponents(r: number, g: number, b: number/* , a*/): number
-    {
+    export function combineRGBComponents(r: number, g: number, b: number/* , a*/): number {
         return /* a << 24 |*/ (r << 16) | (g << 8) | b;
     }
 
@@ -78,8 +75,7 @@ export namespace ParticleUtils
      * Reduces the point to a length of 1.
      * @param point The point to normalize
      */
-    export function normalize(point: Point): void
-    {
+    export function normalize(point: Point): void {
         const oneOverLen = 1 / ParticleUtils.length(point);
 
         point.x *= oneOverLen;
@@ -91,8 +87,7 @@ export namespace ParticleUtils
      * @param point The point to scaleBy
      * @param value The value to scale by.
      */
-    export function scaleBy(point: Point, value: number): void
-    {
+    export function scaleBy(point: Point, value: number): void {
         point.x *= value;
         point.y *= value;
     }
@@ -102,8 +97,7 @@ export namespace ParticleUtils
      * @param point The point to measure length
      * @return The length of this point.
      */
-    export function length(point: Point): number
-    {
+    export function length(point: Point): number {
         return Math.sqrt((point.x * point.x) + (point.y * point.y));
     }
 
@@ -115,32 +109,25 @@ export namespace ParticleUtils
      * @param output An object to put the output in. If omitted, a new object is created.
      * @return The object with r, g, and b properties, possibly with an a property.
      */
-    export function hexToRGB(color: string, output?: Color): Color
-    {
-        if (!output)
-        {
+    export function hexToRGB(color: string, output?: Color): Color {
+        if (!output) {
             output = {} as Color;
         }
-        if (color.charAt(0) === '#')
-        {
+        if (color.charAt(0) === '#') {
             color = color.substr(1);
-        }
-        else if (color.indexOf('0x') === 0)
-        {
+        } else if (color.indexOf('0x') === 0) {
             color = color.substr(2);
         }
         let alpha;
 
-        if (color.length === 8)
-        {
+        if (color.length === 8) {
             alpha = color.substr(0, 2);
             color = color.substr(2);
         }
         output.r = parseInt(color.substr(0, 2), 16);// Red
         output.g = parseInt(color.substr(2, 2), 16);// Green
         output.b = parseInt(color.substr(4, 2), 16);// Blue
-        if (alpha)
-        {
+        if (alpha) {
             output.a = parseInt(alpha, 16);
         }
 
@@ -155,8 +142,7 @@ export namespace ParticleUtils
      * @return A function that calculates the percentage of change at
      *                    a given point in time (0-1 inclusive).
      */
-    export function generateEase(segments: EaseSegment[]): SimpleEase
-    {
+    export function generateEase(segments: EaseSegment[]): SimpleEase {
         const qty = segments.length;
         const oneOverQty = 1 / qty;
         /*
@@ -167,8 +153,7 @@ export namespace ParticleUtils
          */
 
         // eslint-disable-next-line func-names
-        return function (time: number): number
-        {
+        return function (time: number): number {
             const i = (qty * time) | 0;// do a quick floor operation
 
             const t = (time - (i * oneOverQty)) * qty;
@@ -183,12 +168,10 @@ export namespace ParticleUtils
      * @param name The name of the blend mode to get.
      * @return The blend mode as specified in the PIXI.BLEND_MODES enumeration.
      */
-    export function getBlendMode(name: string): number
-    {
+    export function getBlendMode(name: string): number {
         if (!name) return BLEND_MODES.NORMAL;
         name = name.toUpperCase();
-        while (name.indexOf(' ') >= 0)
-        {
+        while (name.indexOf(' ') >= 0) {
             name = name.replace(' ', '_');
         }
 
@@ -203,10 +186,8 @@ export namespace ParticleUtils
      * @param [numSteps=10] The number of steps to use.
      * @return The blend mode as specified in the PIXI.blendModes enumeration.
      */
-    export function createSteppedGradient(list: ValueStep<string>[], numSteps = 10): PropertyNode<Color>
-    {
-        if (typeof numSteps !== 'number' || numSteps <= 0)
-        {
+    export function createSteppedGradient(list: ValueStep<string>[], numSteps = 10): PropertyNode<Color> {
+        if (typeof numSteps !== 'number' || numSteps <= 0) {
             numSteps = 10;
         }
         const first = new PropertyNode<Color>(ParticleUtils.hexToRGB(list[0].value), list[0].time);
@@ -217,13 +198,11 @@ export namespace ParticleUtils
         let nextIndex = 1;
         let next = list[nextIndex];
 
-        for (let i = 1; i < numSteps; ++i)
-        {
+        for (let i = 1; i < numSteps; ++i) {
             let lerp = i / numSteps;
             // ensure we are on the right segment, if multiple
 
-            while (lerp > next.time)
-            {
+            while (lerp > next.time) {
                 current = next;
                 next = list[++nextIndex];
             }

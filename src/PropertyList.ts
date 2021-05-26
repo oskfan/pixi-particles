@@ -1,18 +1,18 @@
 import { ParticleUtils, SimpleEase, Color } from './ParticleUtils';
 import { PropertyNode } from './PropertyNode';
 
-function intValueSimple(this: PropertyList<number>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intValueSimple(this: PropertyList<number>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
 
     return ((this.next.value - this.current.value) * lerp) + this.current.value;
 }
 
-function intColorSimple(this: PropertyList<Color>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intColorSimple(this: PropertyList<Color>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
     const curVal = this.current.value; const
         nextVal = this.next.value;
     const r = ((nextVal.r - curVal.r) * lerp) + curVal.r;
@@ -22,13 +22,12 @@ function intColorSimple(this: PropertyList<Color>, lerp: number): number
     return ParticleUtils.combineRGBComponents(r, g, b);
 }
 
-function intValueComplex(this: PropertyList<number>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intValueComplex(this: PropertyList<number>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
     // make sure we are on the right segment
-    while (lerp > this.next.time)
-    {
+    while (lerp > this.next.time) {
         this.current = this.next;
         this.next = this.next.next;
     }
@@ -38,13 +37,12 @@ function intValueComplex(this: PropertyList<number>, lerp: number): number
     return ((this.next.value - this.current.value) * lerp) + this.current.value;
 }
 
-function intColorComplex(this: PropertyList<Color>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intColorComplex(this: PropertyList<Color>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
     // make sure we are on the right segment
-    while (lerp > this.next.time)
-    {
+    while (lerp > this.next.time) {
         this.current = this.next;
         this.next = this.next.next;
     }
@@ -59,13 +57,12 @@ function intColorComplex(this: PropertyList<Color>, lerp: number): number
     return ParticleUtils.combineRGBComponents(r, g, b);
 }
 
-function intValueStepped(this: PropertyList<number>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intValueStepped(this: PropertyList<number>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
     // make sure we are on the right segment
-    while (this.next && lerp > this.next.time)
-    {
+    while (this.next && lerp > this.next.time) {
         this.current = this.next;
         this.next = this.next.next;
     }
@@ -73,13 +70,12 @@ function intValueStepped(this: PropertyList<number>, lerp: number): number
     return this.current.value;
 }
 
-function intColorStepped(this: PropertyList<Color>, lerp: number): number
-{
-    if (this.ease)
-    { lerp = this.ease(lerp); }
+function intColorStepped(this: PropertyList<Color>, lerp: number): number {
+    if (this.ease) {
+        lerp = this.ease(lerp);
+    }
     // make sure we are on the right segment
-    while (this.next && lerp > this.next.time)
-    {
+    while (this.next && lerp > this.next.time) {
         this.current = this.next;
         this.next = this.next.next;
     }
@@ -92,8 +88,7 @@ function intColorStepped(this: PropertyList<Color>, lerp: number): number
  * Singly linked list container for keeping track of interpolated properties for particles.
  * Each Particle will have one of these for each interpolated property.
  */
-export class PropertyList<V>
-{
+export class PropertyList<V> {
     /**
      * The current property node in the linked list.
      */
@@ -124,8 +119,7 @@ export class PropertyList<V>
     /**
      * @param isColor If this list handles color values
      */
-    constructor(isColor = false)
-    {
+    constructor(isColor = false) {
         this.current = null;
         this.next = null;
         this.isColor = !!isColor;
@@ -138,22 +132,16 @@ export class PropertyList<V>
      * @param first The first node in the list.
      * @param first.isStepped If the values should be stepped instead of interpolated linearly.
      */
-    public reset(first: PropertyNode<V>): void
-    {
+    public reset(first: PropertyNode<V>): void {
         this.current = first;
         this.next = first.next;
         const isSimple = this.next && this.next.time >= 1;
 
-        if (isSimple)
-        {
+        if (isSimple) {
             this.interpolate = this.isColor ? intColorSimple : intValueSimple;
-        }
-        else if (first.isStepped)
-        {
+        } else if (first.isStepped) {
             this.interpolate = this.isColor ? intColorStepped : intValueStepped;
-        }
-        else
-        {
+        } else {
             this.interpolate = this.isColor ? intColorComplex : intValueComplex;
         }
         this.ease = this.current.ease;

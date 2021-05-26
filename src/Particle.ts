@@ -11,8 +11,7 @@ import { Texture } from '@pixi/core';
 /**
  * An individual particle image. You shouldn't have to deal with these.
  */
-export class Particle extends Sprite implements LinkedListChild
-{
+export class Particle extends Sprite implements LinkedListChild {
     /**
      * The emitter that controls this particle.
      */
@@ -147,8 +146,7 @@ export class Particle extends Sprite implements LinkedListChild
     /**
      * @param {Emitter} emitter The emitter that controls this particle.
      */
-    constructor(emitter: Emitter)
-    {
+    constructor(emitter: Emitter) {
         // start off the sprite with a blank texture, since we are going to replace it
         // later when the particle is initialized.
         super();
@@ -198,20 +196,16 @@ export class Particle extends Sprite implements LinkedListChild
      * Initializes the particle for use, based on the properties that have to
      * have been set already on the particle.
      */
-    public init(): void
-    {
+    public init(): void {
         // reset the age
         this.age = 0;
         // set up the velocity based on the start speed and rotation
         this.velocity.x = this.speedList.current.value * this.speedMultiplier;
         this.velocity.y = 0;
         ParticleUtils.rotatePoint(this.rotation, this.velocity);
-        if (this.noRotation)
-        {
+        if (this.noRotation) {
             this.rotation = 0;
-        }
-        else
-        {
+        } else {
             // convert rotation to Radians from Degrees
             this.rotation *= ParticleUtils.DEG_TO_RADS;
         }
@@ -246,8 +240,7 @@ export class Particle extends Sprite implements LinkedListChild
      * for an animated particle.
      * @param art The texture to set.
      */
-    public applyArt(art: any): void
-    {
+    public applyArt(art: any): void {
         this.texture = art || Texture.EMPTY;
     }
 
@@ -258,13 +251,11 @@ export class Particle extends Sprite implements LinkedListChild
      *         relevant particle properties. A value of -1 means the particle
      *         died of old age instead.
      */
-    public update(delta: number): number
-    {
+    public update(delta: number): number {
         // increase age
         this.age += delta;
         // recycle particle if it is too old
-        if (this.age >= this.maxLife || this.age < 0)
-        {
+        if (this.age >= this.maxLife || this.age < 0) {
             this.kill();
 
             return -1;
@@ -273,16 +264,12 @@ export class Particle extends Sprite implements LinkedListChild
         // determine our interpolation value
         let lerp = this.age * this._oneOverLife;// lifetime / maxLife;
 
-        if (this.ease)
-        {
-            if (this.ease.length === 4)
-            {
+        if (this.ease) {
+            if (this.ease.length === 4) {
                 // the t, b, c, d parameters that some tween libraries use
                 // (time, initial value, end value, duration)
                 lerp = (this.ease as any)(lerp, 0, 1, 1);
-            }
-            else
-            {
+            } else {
                 // the simplified version that we like that takes
                 // one parameter, time from 0-1. TweenJS eases provide this usage.
                 lerp = this.ease(lerp);
@@ -290,57 +277,47 @@ export class Particle extends Sprite implements LinkedListChild
         }
 
         // interpolate alpha
-        if (this._doAlpha)
-        {
+        if (this._doAlpha) {
             this.alpha = this.alphaList.interpolate(lerp);
         }
         // interpolate scale
-        if (this._doScale)
-        {
+        if (this._doScale) {
             const scale = this.scaleList.interpolate(lerp) * this.scaleMultiplier;
 
             this.scale.x = this.scale.y = scale;
         }
         // handle movement
-        if (this._doNormalMovement)
-        {
+        if (this._doNormalMovement) {
             let deltaX: number;
             let deltaY: number;
             // interpolate speed
 
-            if (this._doSpeed)
-            {
+            if (this._doSpeed) {
                 const speed = this.speedList.interpolate(lerp) * this.speedMultiplier;
 
                 ParticleUtils.normalize(this.velocity);
                 ParticleUtils.scaleBy(this.velocity, speed);
                 deltaX = this.velocity.x * delta;
                 deltaY = this.velocity.y * delta;
-            }
-            else if (this._doAcceleration)
-            {
+            } else if (this._doAcceleration) {
                 const oldVX = this.velocity.x;
                 const oldVY = this.velocity.y;
 
                 this.velocity.x += this.acceleration.x * delta;
                 this.velocity.y += this.acceleration.y * delta;
-                if (this.maxSpeed)
-                {
+                if (this.maxSpeed) {
                     const currentSpeed = ParticleUtils.length(this.velocity);
                     // if we are going faster than we should, clamp at the max speed
                     // DO NOT recalculate vector length
 
-                    if (currentSpeed > this.maxSpeed)
-                    {
+                    if (currentSpeed > this.maxSpeed) {
                         ParticleUtils.scaleBy(this.velocity, this.maxSpeed / currentSpeed);
                     }
                 }
                 // calculate position delta by the midpoint between our old velocity and our new velocity
                 deltaX = (oldVX + this.velocity.x) / 2 * delta;
                 deltaY = (oldVY + this.velocity.y) / 2 * delta;
-            }
-            else
-            {
+            } else {
                 deltaX = this.velocity.x * delta;
                 deltaY = this.velocity.y * delta;
             }
@@ -349,24 +326,18 @@ export class Particle extends Sprite implements LinkedListChild
             this.position.y += deltaY;
         }
         // interpolate color
-        if (this._doColor)
-        {
+        if (this._doColor) {
             this.tint = this.colorList.interpolate(lerp);
         }
         // update rotation
-        if (this.rotationAcceleration !== 0)
-        {
+        if (this.rotationAcceleration !== 0) {
             const newRotationSpeed = this.rotationSpeed + (this.rotationAcceleration * delta);
 
             this.rotation += (this.rotationSpeed + newRotationSpeed) / 2 * delta;
             this.rotationSpeed = newRotationSpeed;
-        }
-        else if (this.rotationSpeed !== 0)
-        {
+        } else if (this.rotationSpeed !== 0) {
             this.rotation += this.rotationSpeed * delta;
-        }
-        else if (this.acceleration && !this.noRotation)
-        {
+        } else if (this.acceleration && !this.noRotation) {
             this.rotation = Math.atan2(this.velocity.y, this.velocity.x);// + Math.PI / 2;
         }
 
@@ -377,18 +348,15 @@ export class Particle extends Sprite implements LinkedListChild
      * Kills the particle, removing it from the display list
      * and telling the emitter to recycle it.
      */
-    public kill(): void
-    {
+    public kill(): void {
         this.emitter.recycle(this);
     }
 
     /**
      * Destroys the particle, removing references and preventing future use.
      */
-    public destroy(): void
-    {
-        if (this.parent)
-        {
+    public destroy(): void {
+        if (this.parent) {
             this.parent.removeChild(this);
         }
         this.Sprite_destroy();
@@ -404,28 +372,21 @@ export class Particle extends Sprite implements LinkedListChild
      *            Textures via Texture.from().
      * @return The art, after any needed modifications.
      */
-    public static parseArt(art: any[]): any[]
-    {
+    public static parseArt(art: any[]): any[] {
         // convert any strings to Textures.
         let i;
 
-        for (i = art.length; i >= 0; --i)
-        {
-            if (typeof art[i] === 'string')
-            {
+        for (i = art.length; i >= 0; --i) {
+            if (typeof art[i] === 'string') {
                 art[i] = GetTextureFromString(art[i]);
             }
         }
         // particles from different base textures will be slower in WebGL than if they
         // were from one spritesheet
-        if (ParticleUtils.verbose)
-        {
-            for (i = art.length - 1; i > 0; --i)
-            {
-                if (art[i].baseTexture !== art[i - 1].baseTexture)
-                {
-                    if (window.console)
-                    {
+        if (ParticleUtils.verbose) {
+            for (i = art.length - 1; i > 0; --i) {
+                if (art[i].baseTexture !== art[i - 1].baseTexture) {
+                    if (window.console) {
                         // eslint-disable-next-line max-len
                         console.warn('PixiParticles: using particle textures from different images may hinder performance in WebGL');
                     }
@@ -443,8 +404,7 @@ export class Particle extends Sprite implements LinkedListChild
      * @param extraData The extra data from the particle config.
      * @return The parsed extra data.
      */
-    public static parseData(extraData: any): any
-    {
+    public static parseData(extraData: any): any {
         return extraData;
     }
 }

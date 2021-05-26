@@ -54,14 +54,13 @@ const WHITELISTER = new RegExp(
  * @param pathString The string to parse.
  * @return The path function - takes x, outputs y.
  */
-function parsePath(pathString: string): (x: number) => number
-{
+function parsePath(pathString: string): (x: number) => number {
     const matches = pathString.match(WHITELISTER);
 
-    for (let i = matches.length - 1; i >= 0; --i)
-    {
-        if (MATH_FUNCS.indexOf(matches[i]) >= 0)
-        { matches[i] = `Math.${matches[i]}`; }
+    for (let i = matches.length - 1; i >= 0; --i) {
+        if (MATH_FUNCS.indexOf(matches[i]) >= 0) {
+            matches[i] = `Math.${matches[i]}`;
+        }
     }
     pathString = matches.join('');
 
@@ -88,8 +87,7 @@ function parsePath(pathString: string): (x: number) => number
  * 	"cos(x/100) * 30" // Particles curve counterclockwise (for medium speed/low lifetime particles)
  * 	"pow(x/10, 2) / 2" // Particles curve clockwise (remember, +y is down).
  */
-export class PathParticle extends Particle
-{
+export class PathParticle extends Particle {
     /**
      * The function representing the path the particle should take.
      */
@@ -109,10 +107,9 @@ export class PathParticle extends Particle
     public movement: number;
 
     /**
-     * @param {PIXI.particles.Emitter} emitter The emitter that controls this PathParticle.
+     * @param {Emitter} emitter The emitter that controls this PathParticle.
      */
-    constructor(emitter: Emitter)
-    {
+    constructor(emitter: Emitter) {
         super(emitter);
         this.path = null;
         this.initialRotation = 0;
@@ -124,8 +121,7 @@ export class PathParticle extends Particle
      * Initializes the particle for use, based on the properties that have to
      * have been set already on the particle.
      */
-    public init(): void
-    {
+    public init(): void {
         // get initial rotation before it is converted to radians
         this.initialRotation = this.rotation;
         // standard init
@@ -146,22 +142,17 @@ export class PathParticle extends Particle
      * Updates the particle.
      * @param delta Time elapsed since the previous frame, in __seconds__.
      */
-    public update(delta: number): number
-    {
+    public update(delta: number): number {
         const lerp = this.Particle_update(delta);
         // if the particle died during the update, then don't bother
 
-        if (lerp >= 0 && this.path)
-        {
+        if (lerp >= 0 && this.path) {
             // increase linear movement based on speed
-            if (this._doSpeed)
-            {
+            if (this._doSpeed) {
                 const speed = this.speedList.interpolate(lerp) * this.speedMultiplier;
 
                 this.movement += speed * delta;
-            }
-            else
-            {
+            } else {
                 const speed = this.speedList.current.value * this.speedMultiplier;
 
                 this.movement += speed * delta;
@@ -180,8 +171,7 @@ export class PathParticle extends Particle
     /**
      * Destroys the particle, removing references and preventing future use.
      */
-    public destroy(): void
-    {
+    public destroy(): void {
         this.Particle_destroy();
         this.path = this.initialPosition = null;
     }
@@ -194,8 +184,7 @@ export class PathParticle extends Particle
      *            Textures via Texture.fromImage().
      * @return The art, after any needed modifications.
      */
-    public static parseArt(art: (Texture|string)[]): Texture[]
-    {
+    public static parseArt(art: (Texture|string)[]): Texture[] {
         return Particle.parseArt(art);
     }
 
@@ -206,29 +195,20 @@ export class PathParticle extends Particle
      * @param extraData The extra data from the particle config.
      * @return The parsed extra data.
      */
-    public static parseData(extraData: {path: string}): any
-    {
+    public static parseData(extraData: {path: string}): any {
         const output: any = {};
 
-        if (extraData && extraData.path)
-        {
-            try
-            {
+        if (extraData && extraData.path) {
+            try {
                 output.path = parsePath(extraData.path);
-            }
-            catch (e)
-            {
-                if (ParticleUtils.verbose)
-                {
+            } catch (e) {
+                if (ParticleUtils.verbose) {
                     console.error('PathParticle: error in parsing path expression');
                 }
                 output.path = null;
             }
-        }
-        else
-        {
-            if (ParticleUtils.verbose)
-            {
+        } else {
+            if (ParticleUtils.verbose) {
                 console.error('PathParticle requires a path string in extraData!');
             }
             output.path = null;

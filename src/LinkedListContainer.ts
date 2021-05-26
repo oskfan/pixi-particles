@@ -16,46 +16,36 @@ export interface LinkedListChild extends DisplayObject
  * However, this is primarily intended to be used for heavy particle usage, and may not handle
  * edge cases well if used as a complete Container replacement.
  */
-export class LinkedListContainer extends Container
-{
+export class LinkedListContainer extends Container {
     private _firstChild: LinkedListChild|null = null;
     private _lastChild: LinkedListChild|null = null;
     private _childCount = 0;
 
-    public get firstChild(): LinkedListChild
-    {
+    public get firstChild(): LinkedListChild {
         return this._firstChild;
     }
 
-    public get lastChild(): LinkedListChild
-    {
+    public get lastChild(): LinkedListChild {
         return this._lastChild;
     }
 
-    public get childCount(): number
-    {
+    public get childCount(): number {
         return this._childCount;
     }
 
-    public addChild<T extends DisplayObject[]>(...children: T): T[0]
-    {
+    public addChild<T extends DisplayObject[]>(...children: T): T[0] {
         // if there is only one argument we can bypass looping through the them
-        if (children.length > 1)
-        {
+        if (children.length > 1) {
             // loop through the array and add all children
-            for (let i = 0; i < children.length; i++)
-            {
+            for (let i = 0; i < children.length; i++) {
                 // eslint-disable-next-line prefer-rest-params
                 this.addChild(children[i]);
             }
-        }
-        else
-        {
+        } else {
             const child = children[0] as LinkedListChild;
             // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
 
-            if (child.parent)
-            {
+            if (child.parent) {
                 child.parent.removeChild(child);
             }
 
@@ -66,15 +56,13 @@ export class LinkedListContainer extends Container
             (child.transform as any)._parentID = -1;
 
             // add to list if we have a list
-            if (this._lastChild)
-            {
+            if (this._lastChild) {
                 this._lastChild.nextChild = child;
                 child.prevChild = this._lastChild;
                 this._lastChild = child;
             }
             // otherwise initialize the list
-            else
-            {
+            else {
                 this._firstChild = this._lastChild = child;
             }
 
@@ -93,15 +81,12 @@ export class LinkedListContainer extends Container
         return children[0];
     }
 
-    public addChildAt<T extends DisplayObject>(child: T, index: number): T
-    {
-        if (index < 0 || index > this._childCount)
-        {
+    public addChildAt<T extends DisplayObject>(child: T, index: number): T {
+        if (index < 0 || index > this._childCount) {
             throw new Error(`addChildAt: The index ${index} supplied is out of bounds ${this._childCount}`);
         }
 
-        if (child.parent)
-        {
+        if (child.parent) {
             child.parent.removeChild(child);
         }
 
@@ -114,33 +99,28 @@ export class LinkedListContainer extends Container
         const c = (child as any) as LinkedListChild;
 
         // if no children, do basic initialization
-        if (!this._firstChild)
-        {
+        if (!this._firstChild) {
             this._firstChild = this._lastChild = c;
         }
         // add at beginning (back)
-        else if (index === 0)
-        {
+        else if (index === 0) {
             this._firstChild.prevChild = c;
             c.nextChild = this._firstChild;
             this._firstChild = c;
         }
         // add at end (front)
-        else if (index === this._childCount)
-        {
+        else if (index === this._childCount) {
             this._lastChild.nextChild = c;
             c.prevChild = this._lastChild;
             this._lastChild = c;
         }
         // otherwise we have to start counting through the children to find the right one
         // - SLOW, only provided to fully support the possibility of use
-        else
-        {
+        else {
             let i = 0;
             let target = this._firstChild;
 
-            while (i < index)
-            {
+            while (i < index) {
                 target = target.nextChild;
                 ++i;
             }
@@ -172,15 +152,12 @@ export class LinkedListContainer extends Container
      * @param relative - The current child to add the new child relative to.
      * @return The child that was added.
      */
-    public addChildBelow<T extends DisplayObject>(child: T, relative: DisplayObject): T
-    {
-        if (relative.parent !== this)
-        {
+    public addChildBelow<T extends DisplayObject>(child: T, relative: DisplayObject): T {
+        if (relative.parent !== this) {
             throw new Error(`addChildBelow: The relative target must be a child of this parent`);
         }
 
-        if (child.parent)
-        {
+        if (child.parent) {
             child.parent.removeChild(child);
         }
 
@@ -195,8 +172,7 @@ export class LinkedListContainer extends Container
         (child as any as LinkedListChild).prevChild = (relative as LinkedListChild).prevChild;
         (child as any as LinkedListChild).nextChild = (relative as LinkedListChild);
         (relative as LinkedListChild).prevChild = (child as any as LinkedListChild);
-        if (this._firstChild === relative)
-        {
+        if (this._firstChild === relative) {
             this._firstChild = (child as any as LinkedListChild);
         }
 
@@ -221,15 +197,12 @@ export class LinkedListContainer extends Container
      * @param relative - The current child to add the new child relative to.
      * @return The child that was added.
      */
-    public addChildAbove<T extends DisplayObject>(child: T, relative: DisplayObject): T
-    {
-        if (relative.parent !== this)
-        {
+    public addChildAbove<T extends DisplayObject>(child: T, relative: DisplayObject): T {
+        if (relative.parent !== this) {
             throw new Error(`addChildBelow: The relative target must be a child of this parent`);
         }
 
-        if (child.parent)
-        {
+        if (child.parent) {
             child.parent.removeChild(child);
         }
 
@@ -244,8 +217,7 @@ export class LinkedListContainer extends Container
         (child as any as LinkedListChild).nextChild = (relative as LinkedListChild).nextChild;
         (child as any as LinkedListChild).prevChild = (relative as LinkedListChild);
         (relative as LinkedListChild).nextChild = (child as any as LinkedListChild);
-        if (this._lastChild === relative)
-        {
+        if (this._lastChild === relative) {
             this._lastChild = (child as any as LinkedListChild);
         }
 
@@ -263,10 +235,8 @@ export class LinkedListContainer extends Container
         return child;
     }
 
-    public swapChildren(child: DisplayObject, child2: DisplayObject): void
-    {
-        if (child === child2 || child.parent !== this || child2.parent !== this)
-        {
+    public swapChildren(child: DisplayObject, child2: DisplayObject): void {
+        if (child === child2 || child.parent !== this || child2.parent !== this) {
             return;
         }
 
@@ -277,103 +247,78 @@ export class LinkedListContainer extends Container
         (child2 as LinkedListChild).prevChild = prevChild;
         (child2 as LinkedListChild).nextChild = nextChild;
 
-        if (this._firstChild === child)
-        {
+        if (this._firstChild === child) {
             this._firstChild = child2 as LinkedListChild;
-        }
-        else if (this._firstChild === child2)
-        {
+        } else if (this._firstChild === child2) {
             this._firstChild = child as LinkedListChild;
         }
-        if (this._lastChild === child)
-        {
+        if (this._lastChild === child) {
             this._lastChild = child2 as LinkedListChild;
-        }
-        else if (this._lastChild === child2)
-        {
+        } else if (this._lastChild === child2) {
             this._lastChild = child as LinkedListChild;
         }
 
         this.onChildrenChange();
     }
 
-    public getChildIndex(child: DisplayObject): number
-    {
+    public getChildIndex(child: DisplayObject): number {
         let index = 0;
         let test = this._firstChild;
 
-        while (test)
-        {
-            if (test === child)
-            {
+        while (test) {
+            if (test === child) {
                 break;
             }
             test = test.nextChild;
             ++index;
         }
-        if (!test)
-        {
+        if (!test) {
             throw new Error('The supplied DisplayObject must be a child of the caller');
         }
 
         return index;
     }
 
-    setChildIndex(child: DisplayObject, index: number): void
-    {
-        if (index < 0 || index >= this._childCount)
-        {
+    setChildIndex(child: DisplayObject, index: number): void {
+        if (index < 0 || index >= this._childCount) {
             throw new Error(`The index ${index} supplied is out of bounds ${this._childCount}`);
         }
-        if (child.parent !== this)
-        {
+        if (child.parent !== this) {
             throw new Error('The supplied DisplayObject must be a child of the caller');
         }
 
         // remove child
-        if ((child as LinkedListChild).nextChild)
-        {
+        if ((child as LinkedListChild).nextChild) {
             (child as LinkedListChild).nextChild.prevChild = (child as LinkedListChild).prevChild;
         }
-        if ((child as LinkedListChild).prevChild)
-        {
+        if ((child as LinkedListChild).prevChild) {
             (child as LinkedListChild).prevChild.nextChild = (child as LinkedListChild).nextChild;
         }
-        if (this._firstChild === (child as LinkedListChild))
-        {
+        if (this._firstChild === (child as LinkedListChild)) {
             this._firstChild = (child as LinkedListChild).nextChild;
         }
-        if (this._lastChild === (child as LinkedListChild))
-        {
+        if (this._lastChild === (child as LinkedListChild)) {
             this._lastChild = (child as LinkedListChild).prevChild;
         }
         (child as LinkedListChild).nextChild = null;
         (child as LinkedListChild).prevChild = null;
 
         // do addChildAt
-        if (!this._firstChild)
-        {
+        if (!this._firstChild) {
             this._firstChild = this._lastChild = (child as LinkedListChild);
-        }
-        else if (index === 0)
-        {
+        } else if (index === 0) {
             this._firstChild.prevChild = (child as LinkedListChild);
             (child as LinkedListChild).nextChild = this._firstChild;
             this._firstChild = (child as LinkedListChild);
-        }
-        else if (index === this._childCount)
-        {
+        } else if (index === this._childCount) {
             this._lastChild.nextChild = (child as LinkedListChild);
             (child as LinkedListChild).prevChild = this._lastChild;
             this._lastChild = (child as LinkedListChild);
-        }
-        else
-        {
+        } else {
             let i = 0;
             let target = this._firstChild;
 
-            while (i < index)
-            {
+            while (i < index) {
                 target = target.nextChild;
                 ++i;
             }
@@ -386,19 +331,14 @@ export class LinkedListContainer extends Container
         (this as any).onChildrenChange(index);
     }
 
-    public removeChild<T extends DisplayObject[]>(...children: T): T[0]
-    {
+    public removeChild<T extends DisplayObject[]>(...children: T): T[0] {
         // if there is only one argument we can bypass looping through the them
-        if (children.length > 1)
-        {
+        if (children.length > 1) {
             // loop through the arguments property and remove all children
-            for (let i = 0; i < children.length; i++)
-            {
+            for (let i = 0; i < children.length; i++) {
                 this.removeChild(children[i]);
             }
-        }
-        else
-        {
+        } else {
             const child = children[0] as LinkedListChild;
 
             // bail if not actually our child
@@ -409,20 +349,16 @@ export class LinkedListContainer extends Container
             (child.transform as any)._parentID = -1;
 
             // swap out child references
-            if (child.nextChild)
-            {
+            if (child.nextChild) {
                 child.nextChild.prevChild = child.prevChild;
             }
-            if (child.prevChild)
-            {
+            if (child.prevChild) {
                 child.prevChild.nextChild = child.nextChild;
             }
-            if (this._firstChild === child)
-            {
+            if (this._firstChild === child) {
                 this._firstChild = child.nextChild;
             }
-            if (this._lastChild === child)
-            {
+            if (this._lastChild === child) {
                 this._lastChild = child.prevChild;
             }
             // clear sibling references
@@ -444,20 +380,16 @@ export class LinkedListContainer extends Container
         return children[0];
     }
 
-    public getChildAt(index: number): DisplayObject
-    {
-        if (index < 0 || index >= this._childCount)
-        {
+    public getChildAt(index: number): DisplayObject {
+        if (index < 0 || index >= this._childCount) {
             throw new Error(`getChildAt: Index (${index}) does not exist.`);
         }
 
-        if (index === 0)
-        {
+        if (index === 0) {
             return this._firstChild;
         }
         // add at end (front)
-        else if (index === this._childCount)
-        {
+        else if (index === this._childCount) {
             return this._lastChild;
         }
         // otherwise we have to start counting through the children to find the right one
@@ -465,8 +397,7 @@ export class LinkedListContainer extends Container
         let i = 0;
         let target = this._firstChild;
 
-        while (i < index)
-        {
+        while (i < index) {
             target = target.nextChild;
             ++i;
         }
@@ -474,28 +405,23 @@ export class LinkedListContainer extends Container
         return target;
     }
 
-    public removeChildAt(index: number): DisplayObject
-    {
+    public removeChildAt(index: number): DisplayObject {
         const child = this.getChildAt(index) as LinkedListChild;
 
         // ensure child transform will be recalculated..
         (child as any).parent = null;
         (child.transform as any)._parentID = -1;
         // swap out child references
-        if (child.nextChild)
-        {
+        if (child.nextChild) {
             child.nextChild.prevChild = child.prevChild;
         }
-        if (child.prevChild)
-        {
+        if (child.prevChild) {
             child.prevChild.nextChild = child.nextChild;
         }
-        if (this._firstChild === child)
-        {
+        if (this._firstChild === child) {
             this._firstChild = child.nextChild;
         }
-        if (this._lastChild === child)
-        {
+        if (this._lastChild === child) {
             this._lastChild = child.prevChild;
         }
         // clear sibling references
@@ -516,21 +442,17 @@ export class LinkedListContainer extends Container
         return child;
     }
 
-    public removeChildren(beginIndex = 0, endIndex = this._childCount): DisplayObject[]
-    {
+    public removeChildren(beginIndex = 0, endIndex = this._childCount): DisplayObject[] {
         const begin = beginIndex;
         const end = endIndex;
         const range = end - begin;
 
-        if (range > 0 && range <= end)
-        {
+        if (range > 0 && range <= end) {
             const removed: LinkedListChild[] = [];
             let child = this._firstChild;
 
-            for (let i = 0; i <= end && child; ++i, child = child.nextChild)
-            {
-                if (i >= begin)
-                {
+            for (let i = 0; i <= end && child; ++i, child = child.nextChild) {
+                if (i >= begin) {
                     removed.push(child);
                 }
             }
@@ -540,35 +462,27 @@ export class LinkedListContainer extends Container
             // child after removed section
             const nextChild = removed[removed.length - 1].nextChild;
 
-            if (!nextChild)
-            {
+            if (!nextChild) {
                 // if we removed the last child, then the new last child is the one before
                 // the removed section
                 this._lastChild = prevChild;
-            }
-            else
-            {
+            } else {
                 // otherwise, stitch the child before the section to the child after
                 nextChild.prevChild = prevChild;
             }
-            if (!prevChild)
-            {
+            if (!prevChild) {
                 // if we removed the first child, then the new first child is the one after
                 // the removed section
                 this._firstChild = nextChild;
-            }
-            else
-            {
+            } else {
                 // otherwise stich the child after the section to the one before
                 prevChild.nextChild = nextChild;
             }
 
-            for (let i = 0; i < removed.length; ++i)
-            {
+            for (let i = 0; i < removed.length; ++i) {
                 // clear parenting and sibling references for all removed children
                 (removed[i] as any).parent = null;
-                if (removed[i].transform)
-                {
+                if (removed[i].transform) {
                     (removed[i].transform as any)._parentID = -1;
                 }
                 removed[i].nextChild = null;
@@ -579,16 +493,13 @@ export class LinkedListContainer extends Container
 
             (this as any).onChildrenChange(beginIndex);
 
-            for (let i = 0; i < removed.length; ++i)
-            {
+            for (let i = 0; i < removed.length; ++i) {
                 removed[i].emit('removed', this);
                 this.emit('childRemoved', removed[i], this, i);
             }
 
             return removed;
-        }
-        else if (range === 0 && this._childCount === 0)
-        {
+        } else if (range === 0 && this._childCount === 0) {
             return [];
         }
 
@@ -599,8 +510,7 @@ export class LinkedListContainer extends Container
      * Updates the transform on all children of this container for rendering.
      * Copied from and overrides PixiJS v5 method (v4 method is identical)
      */
-    updateTransform(): void
-    {
+    updateTransform(): void {
         (this as any)._boundsID++;
 
         this.transform.updateTransform(this.parent.transform);
@@ -611,12 +521,10 @@ export class LinkedListContainer extends Container
         let child;
         let next;
 
-        for (child = this._firstChild; child; child = next)
-        {
+        for (child = this._firstChild; child; child = next) {
             next = child.nextChild;
 
-            if (child.visible)
-            {
+            if (child.visible) {
                 child.updateTransform();
             }
         }
@@ -626,8 +534,7 @@ export class LinkedListContainer extends Container
      * Recalculates the bounds of the container.
      * Copied from and overrides PixiJS v5 method (v4 method is identical)
      */
-    calculateBounds(): void
-    {
+    calculateBounds(): void {
         this._bounds.clear();
 
         this._calculateBounds();
@@ -635,31 +542,24 @@ export class LinkedListContainer extends Container
         let child;
         let next;
 
-        for (child = this._firstChild; child; child = next)
-        {
+        for (child = this._firstChild; child; child = next) {
             next = child.nextChild;
 
-            if (!child.visible || !child.renderable)
-            {
+            if (!child.visible || !child.renderable) {
                 continue;
             }
 
             child.calculateBounds();
 
             // TODO: filter+mask, need to mask both somehow
-            if ((child as any)._mask)
-            {
+            if ((child as any)._mask) {
                 const maskObject = (((child as any)._mask as MaskData).maskObject || (child as any)._mask) as Container;
 
                 maskObject.calculateBounds();
                 this._bounds.addBoundsMask((child as any)._bounds, (maskObject as any)._bounds);
-            }
-            else if (child.filterArea)
-            {
+            } else if (child.filterArea) {
                 this._bounds.addBoundsArea((child as any)._bounds, child.filterArea);
-            }
-            else
-            {
+            } else {
                 this._bounds.addBounds((child as any)._bounds);
             }
         }
@@ -670,22 +570,18 @@ export class LinkedListContainer extends Container
     /**
      * Retrieves the local bounds of the displayObject as a rectangle object. Copied from and overrides PixiJS v5 method
      */
-    public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle
-    {
+    public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle {
         // skip Container's getLocalBounds, go directly to DisplayObject
         const result = DisplayObject.prototype.getLocalBounds.call(this, rect);
 
-        if (!skipChildrenUpdate)
-        {
+        if (!skipChildrenUpdate) {
             let child;
             let next;
 
-            for (child = this._firstChild; child; child = next)
-            {
+            for (child = this._firstChild; child; child = next) {
                 next = child.nextChild;
 
-                if (child.visible)
-                {
+                if (child.visible) {
                     child.updateTransform();
                 }
             }
@@ -697,29 +593,23 @@ export class LinkedListContainer extends Container
     /**
      * Renders the object using the WebGL renderer. Copied from and overrides PixiJS v5 method
      */
-    render(renderer: Renderer): void
-    {
+    render(renderer: Renderer): void {
         // if the object is not visible or the alpha is 0 then no need to render this element
-        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-        {
+        if (!this.visible || this.worldAlpha <= 0 || !this.renderable) {
             return;
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || (this.filters && this.filters.length))
-        {
+        if (this._mask || (this.filters && this.filters.length)) {
             this.renderAdvanced(renderer);
-        }
-        else
-        {
+        } else {
             this._render(renderer);
 
             let child;
             let next;
 
             // simple render children!
-            for (child = this._firstChild; child; child = next)
-            {
+            for (child = this._firstChild; child; child = next) {
                 next = child.nextChild;
                 child.render(renderer);
             }
@@ -729,8 +619,7 @@ export class LinkedListContainer extends Container
     /**
      * Render the object using the WebGL renderer and advanced features. Copied from and overrides PixiJS v5 method
      */
-    protected renderAdvanced(renderer: Renderer): void
-    {
+    protected renderAdvanced(renderer: Renderer): void {
         renderer.batch.flush();
 
         const filters = this.filters;
@@ -740,31 +629,25 @@ export class LinkedListContainer extends Container
         // types but is in code of current release (5.2.4).
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (filters)
-        {
-            if (!(this as any)._enabledFilters)
-            {
+        if (filters) {
+            if (!(this as any)._enabledFilters) {
                 (this as any)._enabledFilters = [];
             }
 
             (this as any)._enabledFilters.length = 0;
 
-            for (let i = 0; i < filters.length; i++)
-            {
-                if (filters[i].enabled)
-                {
+            for (let i = 0; i < filters.length; i++) {
+                if (filters[i].enabled) {
                     (this as any)._enabledFilters.push(filters[i]);
                 }
             }
 
-            if ((this as any)._enabledFilters.length)
-            {
+            if ((this as any)._enabledFilters.length) {
                 renderer.filter.push(this, (this as any)._enabledFilters);
             }
         }
 
-        if (mask)
-        {
+        if (mask) {
             renderer.mask.push(this, this._mask);
         }
 
@@ -775,21 +658,18 @@ export class LinkedListContainer extends Container
         let next;
 
         // now loop through the children and make sure they get rendered
-        for (child = this._firstChild; child; child = next)
-        {
+        for (child = this._firstChild; child; child = next) {
             next = child.nextChild;
             child.render(renderer);
         }
 
         renderer.batch.flush();
 
-        if (mask)
-        {
+        if (mask) {
             renderer.mask.pop(this);
         }
 
-        if (filters && (this as any)._enabledFilters && (this as any)._enabledFilters.length)
-        {
+        if (filters && (this as any)._enabledFilters && (this as any)._enabledFilters.length) {
             renderer.filter.pop();
         }
     }
@@ -797,29 +677,23 @@ export class LinkedListContainer extends Container
     /**
      * Renders the object using the WebGL renderer. Copied from and overrides PixiJS V4 method.
      */
-    renderWebGL(renderer: any): void
-    {
+    renderWebGL(renderer: any): void {
         // if the object is not visible or the alpha is 0 then no need to render this element
-        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-        {
+        if (!this.visible || this.worldAlpha <= 0 || !this.renderable) {
             return;
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || (this.filters && this.filters.length))
-        {
+        if (this._mask || (this.filters && this.filters.length)) {
             this.renderAdvancedWebGL(renderer);
-        }
-        else
-        {
+        } else {
             (this as any)._renderWebGL(renderer);
 
             let child;
             let next;
 
             // simple render children!
-            for (child = this._firstChild; child; child = next)
-            {
+            for (child = this._firstChild; child; child = next) {
                 next = child.nextChild;
                 (child as any).renderWebGL(renderer);
             }
@@ -829,8 +703,7 @@ export class LinkedListContainer extends Container
     /**
      * Render the object using the WebGL renderer and advanced features. Copied from and overrides PixiJS V4 method.
      */
-    private renderAdvancedWebGL(renderer: any): void
-    {
+    private renderAdvancedWebGL(renderer: any): void {
         renderer.flush();
 
         // _filters is a v4 specific property
@@ -838,31 +711,25 @@ export class LinkedListContainer extends Container
         const mask = this._mask;
 
         // push filter first as we need to ensure the stencil buffer is correct for any masking
-        if (filters)
-        {
-            if (!(this as any)._enabledFilters)
-            {
+        if (filters) {
+            if (!(this as any)._enabledFilters) {
                 (this as any)._enabledFilters = [];
             }
 
             (this as any)._enabledFilters.length = 0;
 
-            for (let i = 0; i < filters.length; i++)
-            {
-                if (filters[i].enabled)
-                {
+            for (let i = 0; i < filters.length; i++) {
+                if (filters[i].enabled) {
                     (this as any)._enabledFilters.push(filters[i]);
                 }
             }
 
-            if ((this as any)._enabledFilters.length)
-            {
+            if ((this as any)._enabledFilters.length) {
                 renderer.filterManager.pushFilter(this, (this as any)._enabledFilters);
             }
         }
 
-        if (mask)
-        {
+        if (mask) {
             renderer.maskManager.pushMask(this, this._mask);
         }
 
@@ -873,21 +740,18 @@ export class LinkedListContainer extends Container
         let next;
 
         // now loop through the children and make sure they get rendered
-        for (child = this._firstChild; child; child = next)
-        {
+        for (child = this._firstChild; child; child = next) {
             next = child.nextChild;
             (child as any).renderWebGL(renderer);
         }
 
         renderer.flush();
 
-        if (mask)
-        {
+        if (mask) {
             renderer.maskManager.popMask(this, this._mask);
         }
 
-        if (filters && (this as any)._enabledFilters && (this as any)._enabledFilters.length)
-        {
+        if (filters && (this as any)._enabledFilters && (this as any)._enabledFilters.length) {
             renderer.filterManager.popFilter();
         }
     }
@@ -895,16 +759,13 @@ export class LinkedListContainer extends Container
     /**
      * Renders the object using the Canvas renderer. Copied from and overrides PixiJS V4 method or Canvas mixin in V5.
      */
-    renderCanvas(renderer: any): void
-    {
+    renderCanvas(renderer: any): void {
         // if not visible or the alpha is 0 then no need to render this
-        if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
-        {
+        if (!this.visible || this.worldAlpha <= 0 || !this.renderable) {
             return;
         }
 
-        if (this._mask)
-        {
+        if (this._mask) {
             renderer.maskManager.pushMask(this._mask);
         }
 
@@ -913,14 +774,12 @@ export class LinkedListContainer extends Container
         let child;
         let next;
 
-        for (child = this._firstChild; child; child = next)
-        {
+        for (child = this._firstChild; child; child = next) {
             next = child.nextChild;
             (child as any).renderCanvas(renderer);
         }
 
-        if (this._mask)
-        {
+        if (this._mask) {
             renderer.maskManager.popMask(renderer);
         }
     }

@@ -36,7 +36,7 @@ export interface AnimatedParticleArt
  *     textures: [
  *         //each entry represents a single texture that should be used for one or more
  *         //frames. Any strings will be converted to Textures with Texture.from().
- *         //Instances of PIXI.Texture will be used directly.
+ *         //Instances of Texture will be used directly.
  *         "animFrame1.png",
  *         //entries can be an object with a 'count' property, telling AnimatedParticle to
  *         //use that texture for 'count' frames sequentially.
@@ -49,8 +49,7 @@ export interface AnimatedParticleArt
  * }
  * ```
  */
-export class AnimatedParticle extends Particle
-{
+export class AnimatedParticle extends Particle {
     /**
      * Texture array used as each frame of animation, similarly to how MovieClip works.
      */
@@ -79,8 +78,7 @@ export class AnimatedParticle extends Particle
     /**
      * @param emitter The emitter that controls this AnimatedParticle.
      */
-    constructor(emitter: Emitter)
-    {
+    constructor(emitter: Emitter) {
         super(emitter);
 
         this.textures = null;
@@ -94,15 +92,13 @@ export class AnimatedParticle extends Particle
      * Initializes the particle for use, based on the properties that have to
      * have been set already on the particle.
      */
-    public init(): void
-    {
+    public init(): void {
         this.Particle_init();
 
         this.elapsed = 0;
 
         // if the animation needs to match the particle's life, then cacluate variables
-        if (this.framerate < 0)
-        {
+        if (this.framerate < 0) {
             this.duration = this.maxLife;
             this.framerate = this.textures.length / this.duration;
         }
@@ -110,10 +106,9 @@ export class AnimatedParticle extends Particle
 
     /**
      * Sets the textures for the particle.
-     * @param art An array of PIXI.Texture objects for this animated particle.
+     * @param art An array of Texture objects for this animated particle.
      */
-    public applyArt(art: ParsedAnimatedParticleArt): void
-    {
+    public applyArt(art: ParsedAnimatedParticleArt): void {
         this.textures = art.textures;
         this.framerate = art.framerate;
         this.duration = art.duration;
@@ -124,24 +119,19 @@ export class AnimatedParticle extends Particle
      * Updates the particle.
      * @param delta Time elapsed since the previous frame, in __seconds__.
      */
-    public update(delta: number): number
-    {
+    public update(delta: number): number {
         const lerp = this.Particle_update(delta);
         // only animate the particle if it is still alive
 
-        if (lerp >= 0)
-        {
+        if (lerp >= 0) {
             this.elapsed += delta;
-            if (this.elapsed > this.duration)
-            {
+            if (this.elapsed > this.duration) {
                 // loop elapsed back around
-                if (this.loop)
-                {
+                if (this.loop) {
                     this.elapsed = this.elapsed % this.duration;
                 }
                 // subtract a small amount to prevent attempting to go past the end of the animation
-                else
-                {
+                else {
                     this.elapsed = this.duration - 0.000001;
                 }
             }
@@ -158,8 +148,7 @@ export class AnimatedParticle extends Particle
     /**
      * Destroys the particle, removing references and preventing future use.
      */
-    public destroy(): void
-    {
+    public destroy(): void {
         this.Particle_destroy();
         this.textures = null;
     }
@@ -170,59 +159,46 @@ export class AnimatedParticle extends Particle
      * @param art The array of art data, properly formatted for AnimatedParticle.
      * @return The art, after any needed modifications.
      */
-    public static parseArt(art: AnimatedParticleArt[]): any
-    {
+    public static parseArt(art: AnimatedParticleArt[]): any {
         const outArr: ParsedAnimatedParticleArt[] = [];
 
-        for (let i = 0; i < art.length; ++i)
-        {
+        for (let i = 0; i < art.length; ++i) {
             const data = art[i];
             const output = outArr[i] = {} as ParsedAnimatedParticleArt;
             const outTextures = output.textures = [] as Texture[];
             const textures = data.textures;
 
-            for (let j = 0; j < textures.length; ++j)
-            {
+            for (let j = 0; j < textures.length; ++j) {
                 let tex = textures[j];
 
-                if (typeof tex === 'string')
-                {
+                if (typeof tex === 'string') {
                     outTextures.push(GetTextureFromString(tex));
-                }
-                else if (tex instanceof Texture)
-                {
+                } else if (tex instanceof Texture) {
                     outTextures.push(tex);
                 }
                 // assume an object with extra data determining duplicate frame data
-                else
-                {
+                else {
                     let dupe = tex.count || 1;
 
-                    if (typeof tex.texture === 'string')
-                    {
+                    if (typeof tex.texture === 'string') {
                         tex = GetTextureFromString(tex.texture);
-                    }
-                    else// if(tex.texture instanceof Texture)
+                    } else// if(tex.texture instanceof Texture)
                     {
                         tex = tex.texture;
                     }
-                    for (; dupe > 0; --dupe)
-                    {
+                    for (; dupe > 0; --dupe) {
                         outTextures.push(tex);
                     }
                 }
             }
 
             // use these values to signify that the animation should match the particle life time.
-            if (data.framerate === 'matchLife')
-            {
+            if (data.framerate === 'matchLife') {
                 // -1 means that it should be calculated
                 output.framerate = -1;
                 output.duration = 0;
                 output.loop = false;
-            }
-            else
-            {
+            } else {
                 // determine if the animation should loop
                 output.loop = !!data.loop;
                 // get the framerate, default to 60
