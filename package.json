@@ -36,26 +36,26 @@
   },
   "peerDependencies": {
     "@pixi/constants": "^6.0.4",
-    "@pixi/core": "^6.0.0",
+    "@pixi/core": "^6.0.4",
     "@pixi/display": "^6.0.4",
     "@pixi/eslint-config": "^1.0.1",
-    "@pixi/math": "^6.0.0",
+    "@pixi/math": "^6.0.4",
     "@pixi/settings": "^6.0.4",
-    "@pixi/sprite": "^6.0.0",
+    "@pixi/sprite": "^6.0.4",
     "@pixi/ticker": "^6.0.4",
     "@pixi/utils": "^6.0.4"
   },
   "devDependencies": {
-    "@pixi/constants": "^6.0.0",
-    "@pixi/core": "^6.0.0",
-    "@pixi/display": "^6.0.0",
+    "@pixi/constants": "^6.0.4",
+    "@pixi/core": "^6.0.4",
+    "@pixi/display": "^6.0.4",
     "@pixi/eslint-config": "^1.0.1",
-    "@pixi/math": "^6.0.0",
-    "@pixi/settings": "^6.0.0",
-    "@pixi/sprite": "^6.0.0",
-    "@pixi/ticker": "^6.0.0",
-    "@pixi/utils": "^6.0.0",
-    "dts-bundle-generator": "^4.3.0",
+    "@pixi/math": "^6.0.4",
+    "@pixi/settings": "^6.0.4",
+    "@pixi/sprite": "^6.0.4",
+    "@pixi/ticker": "^6.0.4",
+    "@pixi/utils": "^6.0.4",
+    "dts-bundle-generator": "^5.9.0",
     "electron": "^9.4.0",
     "eslint": "^6.5.0",
     "gh-pages": "^2.0.0",
@@ -72,7 +72,7 @@
     "terser": "^3.16.1",
     "tslib": "^1.11.1",
     "typedoc": "^0.17.5",
-    "typescript": "^3.8.0"
+    "typescript": "^4.2.4"
   },
   "repository": {
     "type": "git",
@@ -99,11 +99,7 @@
   "license": "MIT",
   "workspaces": {
     "packages": [
-      "./",
-      "test/pixi-v4-iife",
-      "test/pixi-v4-module",
-      "test/pixi-v5-iife",
-      "test/pixi-v5-module"
+      "./"
     ]
   },
   "private": true
