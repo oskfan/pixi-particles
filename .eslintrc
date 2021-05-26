@@ -1,14 +1,20 @@
 {
-    "extends": [
-        "@pixi/eslint-config"
-    ],
-    "rules": {
-        "no-self-assign": 0,
-        "no-case-declarations": 0,
-        "max-depth": 0,
-        "@typescript-eslint/camelcase": 0,
-        "@typescript-eslint/no-namespace": 0,
-        "no-inner-declarations": 0,
-        "brace-style": ["error","1tbs"]
-    }
+  "extends": [
+    "@pixi/eslint-config"
+  ],
+  "rules": {
+    "no-self-assign": 0,
+    "no-case-declarations": 0,
+    "max-depth": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/no-namespace": 0,
+    "no-inner-declarations": 0,
+    "brace-style": [
+      "warn",
+      "1tbs",
+      {
+        "allowSingleLine": true
+      }
+    ]
+  }
 }
